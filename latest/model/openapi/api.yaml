@@ -5,14 +5,14 @@ info:
   contact:
     name: techsysplus
     email: devops.techsysplus@post.ch
-  version: 1.3.0-feature-pipeline-test.4
+  version: 1.4.0-feature-pipeline-test.5
 host: 'server:8080'
 basePath: /
 paths:
-  '/logistics/sorting/label/printing/v1/label-printers/{terminalId}':
+  '/logistics/sorting/label/printing/v1/printers/{hostname}':
     get:
-      summary: 'Gets a printer by terminal id'
-      description: 'Gets a printer by terminal id and returns detail information about the printer'
+      summary: 'Gets a printer by hostname'
+      description: 'Gets a printer by hostname and returns detail information about the printer'
       tags:
         - labelprintserver
       produces:
@@ -20,8 +20,8 @@ paths:
       parameters:
         -
           in: path
-          name: terminalId
-          description: 'the terminalId of the label printer'
+          name: hostname
+          description: 'the hostname of the printer'
           required: true
           type: string
       responses:
@@ -32,7 +32,7 @@ paths:
           description: 'Printer not found.'
         '500':
           description: 'Internal server error.'
-  '/logistics/sorting/label/printing/v1/label-printers/{terminalId}/print-jobs':
+  '/logistics/sorting/label/printing/v1/printers/{hostname}/print-jobs':
     post:
       summary: 'Submits a print jobs for a printer'
       description: 'Submits a print jobs for a printer'
@@ -45,8 +45,8 @@ paths:
       parameters:
         -
           in: path
-          name: terminalId
-          description: 'the terminalId of the label printer'
+          name: hostname
+          description: 'the hostname of the printer'
           required: true
           type: string
         -
@@ -138,13 +138,13 @@ definitions:
         pattern: '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
       hostname:
         type: string
-        description: "Hostname of the printer\nEx. pbzh004i or pbzh004i.pnet.ch"
+        description: "Hostname of the printer\nEx. pbzh004i"
       port:
         $ref: 'Int'
         description: "Port of the printer\nDefault value for label printers is 9100"
     required:
       - originSite
-      - terminalId
+      - hostname
     additionalProperties: false
     description: 'LabelPrinter structure'
   OperatingMode:
@@ -191,13 +191,13 @@ definitions:
       requesterId:
         type: string
         description: 'ID of the requesting device'
+        maxLength: 100
       labelIdentifier:
         $ref: 'LabelIdentifier'
         description: "Identification of the label to be printed using a PrintDataKey,\na BarcodeValue or the debug label flag.\nLabel printing via the BarcodeValue is a label copy function and works only\nif one of the corresponding COPY-options is selected in the PrintJobSettings."
-      terminalId:
+      hostname:
         type: string
-        description: "Terminal id of the printer\nId of the printer on which the label is to be printed. In accordance with\nthe existing API sortpla-labelprinter-stream-api the attribute is called terminalId\nhe source of this information is the attribute “SymbolicId” in the\nMDS master data table \"ProductionResource\""
-        pattern: '^[0-9]{6}$'
+        description: "Hostname of the printer\nEx. pbzh004i"
       settings:
         $ref: 'PrintJobSettings'
         description: 'Settings for this print order'
@@ -207,7 +207,7 @@ definitions:
     required:
       - requesterId
       - labelIdentifier
-      - terminalId
+      - hostname
     additionalProperties: false
   Product:
     type: string
