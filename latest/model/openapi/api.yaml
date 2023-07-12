@@ -5,7 +5,7 @@ info:
   contact:
     name: techsysplus
     email: devops.techsysplus@post.ch
-  version: 1.4.0-feature-pipeline-test.5
+  version: 1.4.0-feature-pipeline-test.6
 host: 'server:8080'
 basePath: /
 paths:
