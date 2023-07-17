@@ -5,7 +5,7 @@ info:
   contact:
     name: techsysplus
     email: devops.techsysplus@post.ch
-  version: 1.4.0
+  version: 1.5.0
 host: 'server:8080'
 basePath: /
 paths:
@@ -28,7 +28,7 @@ paths:
         '200':
           description: 'information about the printer'
           schema: {$ref: 'LabelPrinter'}
-        '403':
+        '404':
           description: 'Printer not found.'
         '500':
           description: 'Internal server error.'
@@ -58,7 +58,7 @@ paths:
       responses:
         '204':
           description: 'No addtional information when print job was successful'
-        '403':
+        '404':
           description: 'Printer not found'
         '500':
           description: 'Internal server error'
