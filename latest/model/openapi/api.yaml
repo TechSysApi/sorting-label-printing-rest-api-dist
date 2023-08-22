@@ -5,7 +5,7 @@ info:
   contact:
     name: techsysplus
     email: devops.techsysplus@post.ch
-  version: 1.5.0
+  version: 1.6.0
 host: 'server:8080'
 basePath: /
 paths:
