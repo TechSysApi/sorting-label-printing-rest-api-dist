@@ -5,7 +5,7 @@ info:
   contact:
     name: techsysplus
     email: devops.techsysplus@post.ch
-  version: 1.6.0
+  version: 1.7.0
 host: 'server:8080'
 basePath: /
 paths:
@@ -97,6 +97,10 @@ definitions:
         type: string
         description: "Information used for the contianer ID (SB-Label field 8, part 3).\nDefault value = 9999"
         pattern: '^[0-9]{4}$'
+      containerPosition:
+        type: string
+        description: 'Container position (Stellplatz).'
+        maxLength: 16
     additionalProperties: false
   LabelFormat:
     type: string
