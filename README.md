@@ -8,3 +8,4 @@
 - [v1.5.0](https://TechSysApi.github.io/sorting-label-printing-rest-api-dist/v1.5.0/ui/?url=../model/openapi/api.yaml)
 - [v1.6.0](https://TechSysApi.github.io/sorting-label-printing-rest-api-dist/v1.6.0/ui/?url=../model/openapi/api.yaml)
 - [v1.7.0](https://TechSysApi.github.io/sorting-label-printing-rest-api-dist/v1.7.0/ui/?url=../model/openapi/api.yaml)
+- [v1.8.0](https://TechSysApi.github.io/sorting-label-printing-rest-api-dist/v1.8.0/ui/?url=../model/openapi/api.yaml)

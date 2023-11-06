@@ -5,7 +5,7 @@ info:
   contact:
     name: techsysplus
     email: devops.techsysplus@post.ch
-  version: 1.7.0
+  version: 1.8.0
 host: 'server:8080'
 basePath: /
 paths:
@@ -158,6 +158,7 @@ definitions:
       - DOMESTIC_LABEL_COPY
       - FOREIGN_COUNTRIES_LABEL_COPY
       - BARCODE_COPY
+      - FP_LABEL
     description: 'The operation mode defines additional info how to handle and print the submitted LabelIdentifier'
   PrintJobResponse:
     type: object
