@@ -5,7 +5,7 @@ info:
   contact:
     name: techsysplus
     email: devops.techsysplus@post.ch
-  version: 1.8.0
+  version: 1.10.0
 host: 'server:8080'
 basePath: /
 paths:
@@ -205,7 +205,7 @@ definitions:
         description: "Hostname of the printer\nEx. pbzh004i"
       settings:
         $ref: 'PrintJobSettings'
-        description: 'Settings for this print order'
+        description: 'Settings for this print job'
       labelContent:
         $ref: 'LabelContent'
         description: "Additional values that are not yet known in the label or that can be\noverwritten."
