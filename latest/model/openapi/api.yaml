@@ -5,7 +5,7 @@ info:
   contact:
     name: techsysplus
     email: devops.techsysplus@post.ch
-  version: 1.10.0
+  version: 1.10.1-kaeserst-1709727569676.1
 host: 'server:8080'
 basePath: /
 paths:
@@ -74,7 +74,7 @@ definitions:
       containerTypeCode:
         type: string
         description: '3-digit code for the container type.'
-        pattern: '^[0-9]{3}}$'
+        pattern: '^[0-9]{3}$'
     required:
       - containerType
       - containerTypeCode
