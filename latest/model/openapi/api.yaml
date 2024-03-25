@@ -5,7 +5,7 @@ info:
   contact:
     name: techsysplus
     email: devops.techsysplus@post.ch
-  version: 1.10.1
+  version: 1.11.0-feature-PZS-10079.2
 host: 'server:8080'
 basePath: /
 paths:
@@ -63,6 +63,48 @@ paths:
         '500':
           description: 'Internal server error'
           schema: {$ref: 'PrintJobResponse'}
+  '/logistics/sorting/label/printing/v1/pdfs/{printDataKey}/{containerPositionName}':
+    get:
+      summary: 'Get a PDF with labels by PrintDataKey and ContainerPosition'
+      description: 'Get a PDF with labels by PrintDataKey and ContainerPosition'
+      tags:
+        - labelprintserver
+      produces:
+        - application/pdf
+      parameters:
+        -
+          name: printDataKey
+          in: path
+          required: true
+          schema: {type: string}
+        -
+          name: containerPositionName
+          in: path
+          required: true
+          schema: {type: string}
+      responses:
+        '200':
+          description: 'Returned PDF file with labels for the specified PrintDataKey and ContainerPosition'
+          content: {application/pdf: {schema: {type: string, format: binary}}}
+  /logistics/sorting/label/printing/v1/pdfs:
+    post:
+      summary: 'Gets a PDF with multiple labels by multiple PrintDataKeys and ContainerPositions'
+      description: 'Gets a PDF with multiple labels by multiple PrintDataKeys and ContainerPositions'
+      tags:
+        - labelprintserver
+      produces:
+        - application/pdf
+      parameters:
+        -
+          in: body
+          name: labelPrintingFilter
+          required: true
+          description: 'the filter information to get a PDF with labels'
+          schema: {type: array, items: {$ref: 'LabelPrintingFilter'}}
+      responses:
+        '200':
+          description: 'Returned PDF file with multiple labels for the specified array of PrintDataKeys and ContainerPositions pairs'
+          content: {application/pdf: {schema: {type: string, format: binary}}}
 definitions:
   ContainerType:
     type: object
@@ -151,6 +193,21 @@ definitions:
       - hostname
     additionalProperties: false
     description: 'LabelPrinter structure'
+  LabelPrintingFilter:
+    type: object
+    properties:
+      printDataKey:
+        type: string
+        description: 'The Label ID.'
+        pattern: '[0-9]{15}'
+      containerPositionName:
+        type: string
+        description: "An unique key inside the sort plan to identify\na container position."
+        maxLength: 200
+    required:
+      - printDataKey
+      - containerPositionName
+    additionalProperties: false
   OperatingMode:
     type: string
     enum:
