@@ -3,9 +3,9 @@ info:
   title: 'Sorting Label Printing REST API'
   description: 'API to communicate with the Label Print Server with the main purpose to issue print jobs'
   contact:
-    name: techsysplus
-    email: devops.techsysplus@post.ch
-  version: 1.11.0-feature-PZS-10079.2
+    name: 'Sorting Software Solutions'
+    email: sort.software.solutions@post.ch
+  version: 1.11.0-feature-PZS-10079.3
 host: 'server:8080'
 basePath: /
 paths:
