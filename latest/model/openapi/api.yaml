@@ -3,9 +3,9 @@ info:
   title: 'Sorting Label Printing REST API'
   description: 'API to communicate with the Label Print Server with the main purpose to issue print jobs'
   contact:
-    name: techsysplus
-    email: devops.techsysplus@post.ch
-  version: 1.10.1
+    name: 'Sorting Software Solutions'
+    email: sort.software.solutions@post.ch
+  version: 1.11.0
 host: 'server:8080'
 basePath: /
 paths:
@@ -63,6 +63,52 @@ paths:
         '500':
           description: 'Internal server error'
           schema: {$ref: 'PrintJobResponse'}
+  '/logistics/sorting/label/printing/v1/pdfs/{printDataKey}/{containerPositionName}':
+    get:
+      summary: 'Get a PDF with labels by PrintDataKey and ContainerPosition.'
+      description: 'Get a PDF with labels by PrintDataKey and ContainerPosition.'
+      tags:
+        - labelprintserver
+      produces:
+        - application/pdf
+      parameters:
+        -
+          name: printDataKey
+          in: path
+          required: true
+          schema: {type: string}
+        -
+          name: containerPositionName
+          in: path
+          required: true
+          schema: {type: string}
+      responses:
+        '200':
+          description: 'Returned PDF file with labels for the specified PrintDataKey and ContainerPosition.'
+          content: {application/pdf: {schema: {type: string, format: binary}}}
+        '404':
+          description: 'PrintDataKey not found.'
+  /logistics/sorting/label/printing/v1/pdfs:
+    post:
+      summary: 'Returns a PDF with multiple labels by an array of PrintDataKeys and ContainerPositions pairs.'
+      description: 'Returns a PDF with multiple labels by an array of PrintDataKeys and ContainerPositions pairs.'
+      tags:
+        - labelprintserver
+      produces:
+        - application/pdf
+      parameters:
+        -
+          in: body
+          name: pdfLabelQuery
+          required: true
+          description: 'the query to retrieve a PDF with labels.'
+          schema: {type: array, items: {$ref: 'PdfLabelQuery'}}
+      responses:
+        '200':
+          description: 'Returned PDF file with multiple labels for the specified array of PrintDataKeys and ContainerPositions pairs.'
+          content: {application/pdf: {schema: {type: string, format: binary}}}
+        '404':
+          description: 'PrintDataKey not found.'
 definitions:
   ContainerType:
     type: object
@@ -151,6 +197,21 @@ definitions:
       - hostname
     additionalProperties: false
     description: 'LabelPrinter structure'
+  LabelWithContainerPosition:
+    type: object
+    properties:
+      printDataKey:
+        type: string
+        description: 'The Label ID.'
+        pattern: '[0-9]{15}'
+      containerPositionName:
+        type: string
+        description: "An unique key inside the sort plan to identify\na container position."
+        maxLength: 200
+    required:
+      - printDataKey
+      - containerPositionName
+    additionalProperties: false
   OperatingMode:
     type: string
     enum:
@@ -160,6 +221,16 @@ definitions:
       - BARCODE_COPY
       - FP_LABEL
     description: 'The operation mode defines additional info how to handle and print the submitted LabelIdentifier'
+  PdfLabelQuery:
+    type: object
+    properties:
+      labelWithContainerPositions:
+        type: array
+        items:
+          $ref: 'LabelWithContainerPosition'
+    required:
+      - labelWithContainerPositions
+    additionalProperties: false
   PrintJobResponse:
     type: object
     properties:
