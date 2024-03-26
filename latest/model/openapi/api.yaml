@@ -5,7 +5,7 @@ info:
   contact:
     name: 'Sorting Software Solutions'
     email: sort.software.solutions@post.ch
-  version: 1.11.0-feature-PZS-10079.4
+  version: 1.11.0-feature-PZS-10079.5
 host: 'server:8080'
 basePath: /
 paths:
@@ -90,8 +90,8 @@ paths:
           description: 'PrintDataKey not found.'
   /logistics/sorting/label/printing/v1/pdfs:
     post:
-      summary: 'Gets a PDF with multiple labels by multiple PrintDataKeys and ContainerPositions.'
-      description: 'Gets a PDF with multiple labels by multiple PrintDataKeys and ContainerPositions.'
+      summary: 'Returns a PDF with multiple labels by an array of PrintDataKeys and ContainerPositions pairs.'
+      description: 'Returns a PDF with multiple labels by an array of PrintDataKeys and ContainerPositions pairs.'
       tags:
         - labelprintserver
       produces:
@@ -101,7 +101,7 @@ paths:
           in: body
           name: pdfLabelQuery
           required: true
-          description: 'the filter information to get a PDF with labels.'
+          description: 'the query to retrieve a PDF with labels.'
           schema: {type: array, items: {$ref: 'PdfLabelQuery'}}
       responses:
         '200':
