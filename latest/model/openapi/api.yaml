@@ -5,7 +5,7 @@ info:
   contact:
     name: 'Sorting Software Solutions'
     email: sort.software.solutions@post.ch
-  version: 2.1.0-feature-rename-pdfLabel-interfaces.2
+  version: 1.12.0-feature-rename-pdfLabel-interfaces.3
 host: 'server:8080'
 basePath: /
 paths:
