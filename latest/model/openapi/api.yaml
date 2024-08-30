@@ -5,7 +5,7 @@ info:
   contact:
     name: 'Sorting Software Solutions'
     email: sort.software.solutions@post.ch
-  version: 2.1.0-feature-bulk-pdf-print-endpoints.4
+  version: 2.1.0-feature-bulk-pdf-print-endpoints.5
 host: 'server:8080'
 basePath: /
 paths:
@@ -84,7 +84,7 @@ paths:
           content: {application/pdf: {schema: {type: string, format: binary}}}
         '404':
           description: 'PrintDataKey not found.'
-  /logistics/sorting/label/printing/v1/pdfs/bulk:
+  /logistics/sorting/label/printing/v1/bulk/pdfs/:
     post:
       summary: 'Returns a GUID to the requester on bulk pdf generation request for an array of PrintDataKeys and ContainerPositions pairs.'
       description: 'Returns a GUID to the requester on bulk pdf generation request for an array of PrintDataKeys and ContainerPositions pairs.'
@@ -107,8 +107,8 @@ paths:
           description: 'Service not found.'
         '500':
           description: 'Internal server error'
-  '/logistics/sorting/label/printing/v1/bulk/{poolingRequestId}':
-    post:
+  '/logistics/sorting/label/printing/v1/bulk/pdfs/{poolingRequestId}':
+    get:
       summary: 'Returns a PDF with multiple labels for the pooling request Id.'
       description: 'Returns a PDF with multiple labels for the pooling request Id.'
       tags:
