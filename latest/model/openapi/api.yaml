@@ -5,7 +5,7 @@ info:
   contact:
     name: 'Sorting Software Solutions'
     email: sort.software.solutions@post.ch
-  version: 2.1.0-feature-bulk-pdf-print-endpoints.5
+  version: 2.1.0-feature-bulk-pdf-print-endpoints.6
 host: 'server:8080'
 basePath: /
 paths:
