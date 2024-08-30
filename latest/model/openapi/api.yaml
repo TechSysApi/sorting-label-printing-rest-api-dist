@@ -5,7 +5,7 @@ info:
   contact:
     name: 'Sorting Software Solutions'
     email: sort.software.solutions@post.ch
-  version: 2.1.0-feature-bulk-pdf-print-endpoints.8
+  version: 2.1.0-feature-bulk-pdf-print-endpoints.9
 host: 'server:8080'
 basePath: /
 paths:
@@ -102,7 +102,7 @@ paths:
       responses:
         '200':
           description: 'Return globally unique id for the print job request and an accepted status.'
-          schema: {$ref: 'BulkPdfGenerationResponse'}
+          schema: {$ref: 'BulkPdfLabelResponse'}
         '404':
           description: 'Service not found.'
         '500':
@@ -128,13 +128,13 @@ paths:
           content: {application/pdf: {schema: {type: string, format: binary}}}
         '202':
           description: 'Return current status of the request (In Progress).'
-          schema: {$ref: 'BulkPdfGenerationPoolingResponse'}
+          schema: {$ref: 'BulkPdfLabelPoolingResponse'}
         '404':
           description: 'Service not found.'
         '500':
           description: 'Internal server error'
 definitions:
-  BulkPdfGenerationPoolingResponse:
+  BulkPdfLabelPoolingResponse:
     type: object
     properties:
       poolingRequestId:
@@ -145,15 +145,11 @@ definitions:
         type: string
         description: 'Status of the current request.'
         maxLength: 20
-      message:
-        type: string
-        description: 'Message (Optional).'
-        maxLength: 16
     required:
       - poolingRequestId
       - status
     additionalProperties: false
-  BulkPdfGenerationResponse:
+  BulkPdfLabelResponse:
     type: object
     properties:
       poolingRequestId:
