@@ -5,7 +5,7 @@ info:
   contact:
     name: 'Sorting Software Solutions'
     email: sort.software.solutions@post.ch
-  version: 2.1.0-feature-bulk-pdf-print-endpoints.9
+  version: 2.1.0-feature-bulk-pdf-print-endpoints.12
 host: 'server:8080'
 basePath: /
 paths:
@@ -84,7 +84,7 @@ paths:
           content: {application/pdf: {schema: {type: string, format: binary}}}
         '404':
           description: 'PrintDataKey not found.'
-  /logistics/sorting/label/printing/v1/bulk/pdfs/:
+  /logistics/sorting/label/printing/v1/bulk-pdf-requests:
     post:
       summary: 'Returns a GUID to the requester on bulk pdf generation request for an array of PrintDataKeys and ContainerPositions pairs.'
       description: 'Returns a GUID to the requester on bulk pdf generation request for an array of PrintDataKeys and ContainerPositions pairs.'
@@ -100,64 +100,82 @@ paths:
           description: 'the container positions and print data keys used to retrieve a PDF with labels.'
           schema: {type: array, items: {$ref: 'PdfLabelRequest'}}
       responses:
-        '200':
+        '201':
           description: 'Return globally unique id for the print job request and an accepted status.'
           schema: {$ref: 'BulkPdfLabelResponse'}
         '404':
           description: 'Service not found.'
         '500':
           description: 'Internal server error'
-  '/logistics/sorting/label/printing/v1/bulk/pdfs/{poolingRequestId}':
+  '/logistics/sorting/label/printing/bulk-pdf-requests/{requestId}/status':
     get:
-      summary: 'Returns a PDF with multiple labels for the pooling request Id.'
-      description: 'Returns a PDF with multiple labels for the pooling request Id.'
+      summary: 'Returns a status for the polling request Id.'
+      description: 'Returns a status for the polling request Id.'
       tags:
         - labelprintserver
       produces:
-        - application/pdf
+        - application/json
       parameters:
         -
           in: path
-          name: poolingRequestId
+          name: requestId
           required: true
-          description: 'the global unique identifier of the bulk print job request.'
+          description: 'The global unique identifier for the bulk pdf job request.'
           type: string
       responses:
         '200':
-          description: 'Returned PDF file with multiple labels for the specified pooling request Id.'
-          content: {application/pdf: {schema: {type: string, format: binary}}}
-        '202':
-          description: 'Return current status of the request (In Progress).'
-          schema: {$ref: 'BulkPdfLabelPoolingResponse'}
+          description: 'Return the requestId and current status of the request from one of the following enum - (InProgress, Completed_Successfully, Completed_With_Error, Invalid_Request_Id and Cancelled ).'
+          schema: {$ref: 'BulkPdfLabelPollingResponse'}
         '404':
           description: 'Service not found.'
         '500':
           description: 'Internal server error'
+  '/logistics/sorting/label/printing/bulk-pdf-requests/{requestId}/pdf':
+    get:
+      summary: 'Returned PDF file with multiple labels for the specified polling request Id.'
+      description: 'Returned PDF file with multiple labels for the specified polling request Id.'
+      tags:
+        - labelprintserver
+      produces:
+        - application/json
+      parameters:
+        -
+          in: path
+          name: requestId
+          required: true
+          description: 'The global unique identifier for the bulk pdf request.'
+          type: string
+      responses:
+        '200':
+          description: 'Returned PDF file with multiple labels for the specified polling request Id.'
+          content: {application/pdf: {schema: {type: string, format: binary}}}
+        '404':
+          description: 'Pdf not found.'
+        '500':
+          description: 'Internal server error'
 definitions:
-  BulkPdfLabelPoolingResponse:
+  BulkPdfLabelPollingResponse:
     type: object
     properties:
-      poolingRequestId:
+      requestId:
         type: string
-        description: "Globally unique identifier for the bulk pdf label pooling\n  "
-        maxLength: 100
+        description: 'Globally unique identifier for the bulk pdf label polling'
       status:
-        type: string
+        $ref: 'RequestStatus'
         description: 'Status of the current request.'
-        maxLength: 20
     required:
-      - poolingRequestId
+      - requestId
       - status
     additionalProperties: false
+    description: 'Information related polling request status'
   BulkPdfLabelResponse:
     type: object
     properties:
-      poolingRequestId:
+      requestId:
         type: string
-        description: "Globally unique identifier for the bulk pdf label pooling\n  "
-        maxLength: 100
+        description: 'Globally unique identifier for the bulk pdf label polling request'
     required:
-      - poolingRequestId
+      - requestId
     additionalProperties: false
   ContainerPositionWithPrintData:
     type: object
@@ -339,3 +357,12 @@ definitions:
     enum:
       - ECONOMIY
       - PRIORITY
+  RequestStatus:
+    type: string
+    enum:
+      - INPROGRESS
+      - COMPLETED_SUCCESSFULLY
+      - COMPLETED_WITH_ERROR
+      - CANCELLED
+      - INVALID_REQUEST_ID
+    description: "INPROGRESS = The request is still processing\nCOMPLETED_SUCCESSFULLY = The request is completed and pdf is ready\nCOMPLETED_WITH_ERROR = The request is completed but failed to generate pdf\nCANCELLED = The request is cancelled\nINVALID_REQUEST_ID = The request id is invalid"
