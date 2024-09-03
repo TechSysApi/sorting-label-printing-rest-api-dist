@@ -1,0 +1,368 @@
+swagger: '2.0'
+info:
+  title: 'Sorting Label Printing REST API'
+  description: 'API to communicate with the Label Print Server with the main purpose to issue print jobs'
+  contact:
+    name: 'Sorting Software Solutions'
+    email: sort.software.solutions@post.ch
+  version: 2.1.0-feature-bulk-pdf-print-endpoints.14
+host: 'server:8080'
+basePath: /
+paths:
+  '/logistics/sorting/label/printing/v1/printers/{hostname}':
+    get:
+      summary: 'Gets a printer by hostname'
+      description: 'Gets a printer by hostname and returns detail information about the printer'
+      tags:
+        - labelprintserver
+      produces:
+        - application/json
+      parameters:
+        -
+          in: path
+          name: hostname
+          description: 'the hostname of the printer'
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 'information about the printer'
+          schema: {$ref: 'LabelPrinter'}
+        '404':
+          description: 'Printer not found.'
+        '500':
+          description: 'Internal server error.'
+  '/logistics/sorting/label/printing/v1/printers/{hostname}/print-jobs':
+    post:
+      summary: 'Submits a print jobs for a printer'
+      description: 'Submits a print jobs for a printer'
+      tags:
+        - labelprintserver
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        -
+          in: path
+          name: hostname
+          description: 'the hostname of the printer'
+          required: true
+          type: string
+        -
+          in: body
+          name: printJob
+          required: true
+          description: 'the print job information'
+          schema: {$ref: 'PrintJob'}
+      responses:
+        '204':
+          description: 'No addtional information when print job was successful'
+        '404':
+          description: 'Printer not found'
+        '500':
+          description: 'Internal server error'
+          schema: {$ref: 'PrintJobResponse'}
+  /logistics/sorting/label/printing/v1/pdfs:
+    post:
+      summary: 'Returns a PDF with multiple labels by an array of PrintDataKeys and ContainerPositions pairs.'
+      description: 'Returns a PDF with multiple labels by an array of PrintDataKeys and ContainerPositions pairs.'
+      tags:
+        - labelprintserver
+      produces:
+        - application/pdf
+      parameters:
+        -
+          in: body
+          name: pdfLabelRequest
+          required: true
+          description: 'the container positions and print data keys used to retrieve a PDF with labels.'
+          schema: {type: array, items: {$ref: 'PdfLabelRequest'}}
+      responses:
+        '200':
+          description: 'Returned PDF file with multiple labels for the specified array of PrintDataKeys and ContainerPositions pairs.'
+          content: {application/pdf: {schema: {type: string, format: binary}}}
+        '404':
+          description: 'PrintDataKey not found.'
+  /logistics/sorting/label/printing/v1/bulk-pdf-requests:
+    post:
+      summary: 'Returns a GUID to the requester on bulk pdf generation request for an array of PrintDataKeys and ContainerPositions pairs.'
+      description: 'Returns a GUID to the requester on bulk pdf generation request for an array of PrintDataKeys and ContainerPositions pairs.'
+      tags:
+        - labelprintserver
+      produces:
+        - application/json
+      parameters:
+        -
+          in: body
+          name: pdfLabelRequest
+          required: true
+          description: 'the container positions and print data keys used to retrieve a PDF with labels.'
+          schema: {type: array, items: {$ref: 'PdfLabelRequest'}}
+      responses:
+        '201':
+          description: 'Return globally unique id for the print job request and an accepted status.'
+          schema: {$ref: 'BulkPdfLabelResponse'}
+        '404':
+          description: 'Service not found.'
+        '500':
+          description: 'Internal server error'
+  '/logistics/sorting/label/printing/bulk-pdf-requests/{requestId}/status':
+    get:
+      summary: 'Returns a status for the polling request Id.'
+      description: 'Returns a status for the polling request Id.'
+      tags:
+        - labelprintserver
+      produces:
+        - application/json
+      parameters:
+        -
+          in: path
+          name: requestId
+          required: true
+          description: 'The global unique identifier for the bulk pdf job request.'
+          type: string
+      responses:
+        '200':
+          description: 'Return the requestId and current status of the request.'
+          schema: {$ref: 'BulkPdfLabelSatus'}
+        '404':
+          description: 'Service not found.'
+        '500':
+          description: 'Internal server error'
+  '/logistics/sorting/label/printing/bulk-pdf-requests/{requestId}/pdf':
+    get:
+      summary: 'Returned PDF file with multiple labels for the specified polling request Id.'
+      description: 'Returned PDF file with multiple labels for the specified polling request Id.'
+      tags:
+        - labelprintserver
+      produces:
+        - application/json
+      parameters:
+        -
+          in: path
+          name: requestId
+          required: true
+          description: 'The global unique identifier for the bulk pdf request.'
+          type: string
+      responses:
+        '200':
+          description: 'Returned PDF file with multiple labels for the specified polling request Id.'
+          content: {application/pdf: {schema: {type: string, format: binary}}}
+        '404':
+          description: 'Pdf not found.'
+        '500':
+          description: 'Internal server error'
+definitions:
+  BulkPdfLabelResponse:
+    type: object
+    properties:
+      requestId:
+        type: string
+        description: 'Globally unique identifier for the bulk pdf label polling request'
+    required:
+      - requestId
+    additionalProperties: false
+  BulkPdfLabelSatus:
+    type: object
+    properties:
+      requestId:
+        type: string
+        description: 'Globally unique identifier for the bulk pdf label polling'
+      status:
+        $ref: 'RequestStatus'
+        description: 'Status of the current request.'
+    required:
+      - requestId
+      - status
+    additionalProperties: false
+    description: 'Information related polling request status'
+  ContainerPositionWithPrintData:
+    type: object
+    properties:
+      printDataKey:
+        type: string
+        description: 'The Label ID.'
+        pattern: '[0-9]{15}'
+      containerPositionName:
+        type: string
+        description: "An unique key inside the sort plan to identify\na container position."
+        maxLength: 200
+    required:
+      - printDataKey
+      - containerPositionName
+    additionalProperties: false
+  ContainerType:
+    type: object
+    properties:
+      containerType:
+        type: string
+        description: 'Name of the container type.'
+        maxLength: 17
+      containerTypeCode:
+        type: string
+        description: '3-digit code for the container type.'
+        pattern: '^[0-9]{3}$'
+    required:
+      - containerType
+      - containerTypeCode
+    additionalProperties: false
+  LabelContent:
+    type: object
+    properties:
+      containerType:
+        $ref: 'ContainerType'
+        description: "Text for the container used. Only required if it is not the standard\ntype.\nIt is consciously avoided listing the currently defined container types.\nA free text fields are used instead."
+      product:
+        $ref: 'Product'
+        description: "Product name explicitly required for bundle labels. All other labels\nare using a three-character abbreviation."
+        maxLength: 20
+      avorCode:
+        type: string
+        description: "BBs created in work preparation (AVOR) are indicated in label field 7\n(barcode).\nA code is defined for each location:\nBZ ECL: 911\nBZ HAE: 921\nBZ MUE: 931"
+        pattern: '^9[1,2,3]1$'
+      containerRangeId:
+        type: string
+        description: "Information used for the contianer ID (SB-Label field 8, part 3).\nDefault value = 9999"
+        pattern: '^[0-9]{4}$'
+      containerPosition:
+        type: string
+        description: 'Container position (Stellplatz).'
+        maxLength: 16
+    additionalProperties: false
+  LabelFormat:
+    type: string
+    enum:
+      - SMALL
+      - BIG
+  LabelIdentifier:
+    type: object
+    properties:
+      printDataKey:
+        type: string
+        description: 'The id of the label to be printed'
+        pattern: '[0-9]{15}'
+      barcodeValue:
+        type: string
+        description: "Label printing via the BarcodeValue is a label copy function and works only\nif one of the corresponding COPY-options is selected in the PrintJobSettings"
+        pattern: '[0-9]{15}'
+      debugLabel:
+        type: boolean
+        description: "Prints a debug label. The information provided varies depending on the\nsituation. Workplace information can only be output if a printer is\ndefined via the terminal ID. Settings are only relevant if the printing\nis triggered directly with the scanner. Default is false."
+    additionalProperties: false
+  Int:
+    type: integer
+    description: '<a href="https://swagger.io/docs/specification/data-models/data-types/#numbers">Number @asType integer</a>'
+  LabelPrinter:
+    type: object
+    properties:
+      originSite:
+        type: string
+        description: "Location of the printer\nFormat: Zip 6-digits + ' ' + Name 18-digits"
+        maxLength: 25
+      terminalId:
+        type: string
+        description: 'Id of a label printer in a logistic center'
+        pattern: '^[0-9]{6}$'
+      ipAddress:
+        type: string
+        description: "IP address of the printer\nCan be empty, e.g. if not yet defined"
+        pattern: '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+      hostname:
+        type: string
+        description: "Hostname of the printer\nEx. pbzh004i"
+      port:
+        $ref: 'Int'
+        description: "Port of the printer\nDefault value for label printers is 9100"
+    required:
+      - originSite
+      - hostname
+    additionalProperties: false
+    description: 'LabelPrinter structure'
+  OperatingMode:
+    type: string
+    enum:
+      - PRINT_DATA_KEY
+      - DOMESTIC_LABEL_COPY
+      - FOREIGN_COUNTRIES_LABEL_COPY
+      - BARCODE_COPY
+      - FP_LABEL
+    description: 'The operation mode defines additional info how to handle and print the submitted LabelIdentifier'
+  PdfLabelRequest:
+    type: object
+    properties:
+      containerPositionsWithPrintData:
+        type: array
+        items:
+          $ref: 'ContainerPositionWithPrintData'
+    required:
+      - containerPositionsWithPrintData
+    additionalProperties: false
+  PrintJobResponse:
+    type: object
+    properties:
+      errorMessage:
+        type: string
+        description: "The error message for the failed print job\n  "
+        maxLength: 1000
+    required:
+      - errorMessage
+    additionalProperties: false
+  PrintJobSettings:
+    type: object
+    properties:
+      operatingMode:
+        $ref: 'OperatingMode'
+        description: "Selection of operating mode. With the operating mode, a specific use case\nis selected which determines how the print job is processed. Default\noperating mode is \"PRINT_DATA_KEY\""
+      numberOfCopies:
+        $ref: 'Int'
+        description: "Number of copies to be printed. 1 if omitted\nLimitation of 50 printouts, higher numbers of copies should not be\nprinted in this way."
+        maximum: 50
+      printEntireSortProgram:
+        type: boolean
+        description: "Flag which instructs the print server not only to print the referenced\nlabel, but the entire sorting program. Default is false."
+      labelFormat:
+        $ref: 'LabelFormat'
+        description: "Choice of label format. Currently, only the bundle label format can be\nchanged."
+    required:
+      - operatingMode
+      - numberOfCopies
+    additionalProperties: false
+  PrintJob:
+    type: object
+    properties:
+      requesterId:
+        type: string
+        description: 'ID of the requesting device'
+        maxLength: 100
+      labelIdentifier:
+        $ref: 'LabelIdentifier'
+        description: "Identification of the label to be printed using a PrintDataKey,\na BarcodeValue or the debug label flag.\nLabel printing via the BarcodeValue is a label copy function and works only\nif one of the corresponding COPY-options is selected in the PrintJobSettings."
+      hostname:
+        type: string
+        description: "Hostname of the printer\nEx. pbzh004i"
+      settings:
+        $ref: 'PrintJobSettings'
+        description: 'Settings for this print job'
+      labelContent:
+        $ref: 'LabelContent'
+        description: "Additional values that are not yet known in the label or that can be\noverwritten."
+    required:
+      - requesterId
+      - labelIdentifier
+      - hostname
+    additionalProperties: false
+  Product:
+    type: string
+    enum:
+      - ECONOMIY
+      - PRIORITY
+  RequestStatus:
+    type: string
+    enum:
+      - IN_PROGRESS
+      - COMPLETED_SUCCESSFULLY
+      - COMPLETED_WITH_ERROR
+      - CANCELLED
+      - INVALID_REQUEST_ID
+    description: "IN_PROGRESS = The request is still processing\nCOMPLETED_SUCCESSFULLY = The request is completed and pdf is ready\nCOMPLETED_WITH_ERROR = The request is completed but failed to generate pdf\nCANCELLED = The request is cancelled\nINVALID_REQUEST_ID = The request id is invalid"
