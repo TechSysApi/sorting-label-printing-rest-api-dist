@@ -5,7 +5,7 @@ info:
   contact:
     name: 'Sorting Software Solutions'
     email: sort.software.solutions@post.ch
-  version: 2.1.0-feature-bulk-pdf-print-endpoints.14
+  version: 2.1.0-feature-bulk-pdf-print-endpoints.15
 host: 'server:8080'
 basePath: /
 paths:
@@ -127,7 +127,7 @@ paths:
           description: 'Return the requestId and current status of the request.'
           schema: {$ref: 'BulkPdfLabelSatus'}
         '404':
-          description: 'Service not found.'
+          description: 'RequestId not found.'
         '500':
           description: 'Internal server error'
   '/logistics/sorting/label/printing/bulk-pdf-requests/{requestId}/pdf':
@@ -364,5 +364,4 @@ definitions:
       - COMPLETED_SUCCESSFULLY
       - COMPLETED_WITH_ERROR
       - CANCELLED
-      - INVALID_REQUEST_ID
-    description: "IN_PROGRESS = The request is still processing\nCOMPLETED_SUCCESSFULLY = The request is completed and pdf is ready\nCOMPLETED_WITH_ERROR = The request is completed but failed to generate pdf\nCANCELLED = The request is cancelled\nINVALID_REQUEST_ID = The request id is invalid"
+    description: "IN_PROGRESS = The request is still processing\nCOMPLETED_SUCCESSFULLY = The request is completed and pdf is ready\nCOMPLETED_WITH_ERROR = The request is completed but failed to generate pdf\nCANCELLED = The request is cancelled"
