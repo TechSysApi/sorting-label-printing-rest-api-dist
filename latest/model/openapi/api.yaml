@@ -5,7 +5,7 @@ info:
   contact:
     name: 'Sorting Software Solutions'
     email: sort.software.solutions@post.ch
-  version: 2.0.0
+  version: 2.1.0
 host: 'server:8080'
 basePath: /
 paths:
@@ -84,7 +84,99 @@ paths:
           content: {application/pdf: {schema: {type: string, format: binary}}}
         '404':
           description: 'PrintDataKey not found.'
+  /logistics/sorting/label/printing/v1/bulk-pdf-requests:
+    post:
+      summary: 'Returns a GUID to the requester on bulk pdf generation request for an array of PrintDataKeys and ContainerPositions pairs.'
+      description: 'Returns a GUID to the requester on bulk pdf generation request for an array of PrintDataKeys and ContainerPositions pairs.'
+      tags:
+        - labelprintserver
+      produces:
+        - application/json
+      parameters:
+        -
+          in: body
+          name: pdfLabelRequest
+          required: true
+          description: 'the container positions and print data keys used to retrieve a PDF with labels.'
+          schema: {type: array, items: {$ref: 'PdfLabelRequest'}}
+      responses:
+        '201':
+          description: 'Return globally unique id for the print job request and an accepted status.'
+          schema: {$ref: 'BulkPdfLabelResponse'}
+        '404':
+          description: 'Service not found.'
+        '500':
+          description: 'Internal server error'
+  '/logistics/sorting/label/printing/bulk-pdf-requests/{requestId}/status':
+    get:
+      summary: 'Returns a status for the polling request Id.'
+      description: 'Returns a status for the polling request Id.'
+      tags:
+        - labelprintserver
+      produces:
+        - application/json
+      parameters:
+        -
+          in: path
+          name: requestId
+          required: true
+          description: 'The global unique identifier for the bulk pdf job request.'
+          type: string
+      responses:
+        '200':
+          description: 'Return the requestId and current status of the request.'
+          schema: {$ref: 'BulkPdfLabelSatus'}
+        '404':
+          description: 'RequestId not found.'
+        '500':
+          description: 'Internal server error'
+  '/logistics/sorting/label/printing/bulk-pdf-requests/{requestId}/pdf':
+    get:
+      summary: 'Returned PDF file with multiple labels for the specified polling request Id.'
+      description: 'Returned PDF file with multiple labels for the specified polling request Id.'
+      tags:
+        - labelprintserver
+      produces:
+        - application/json
+      parameters:
+        -
+          in: path
+          name: requestId
+          required: true
+          description: 'The global unique identifier for the bulk pdf request.'
+          type: string
+      responses:
+        '200':
+          description: 'Returned PDF file with multiple labels for the specified polling request Id.'
+          content: {application/pdf: {schema: {type: string, format: binary}}}
+        '404':
+          description: 'Pdf not found.'
+        '500':
+          description: 'Internal server error'
 definitions:
+  BulkPdfLabelResponse:
+    type: object
+    properties:
+      requestId:
+        type: string
+        description: 'Globally unique identifier for the bulk pdf label polling request'
+    required:
+      - requestId
+    additionalProperties: false
+  BulkPdfLabelSatus:
+    type: object
+    properties:
+      requestId:
+        type: string
+        description: 'Globally unique identifier for the bulk pdf label polling'
+      status:
+        $ref: 'RequestStatus'
+        description: 'Status of the current request.'
+    required:
+      - requestId
+      - status
+    additionalProperties: false
+    description: 'Information related polling request status'
   ContainerPositionWithPrintData:
     type: object
     properties:
@@ -265,3 +357,11 @@ definitions:
     enum:
       - ECONOMIY
       - PRIORITY
+  RequestStatus:
+    type: string
+    enum:
+      - IN_PROGRESS
+      - COMPLETED_SUCCESSFULLY
+      - COMPLETED_WITH_ERROR
+      - CANCELLED
+    description: "IN_PROGRESS = The request is still processing\nCOMPLETED_SUCCESSFULLY = The request is completed and pdf is ready\nCOMPLETED_WITH_ERROR = The request is completed but failed to generate pdf\nCANCELLED = The request is cancelled"
