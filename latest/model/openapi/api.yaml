@@ -5,7 +5,7 @@ info:
   contact:
     name: 'Sorting Software Solutions'
     email: sort.software.solutions@post.ch
-  version: 2.1.0
+  version: 2.2.0
 host: 'server:8080'
 basePath: /
 paths:
@@ -362,6 +362,6 @@ definitions:
     enum:
       - IN_PROGRESS
       - COMPLETED_SUCCESSFULLY
-      - COMPLETED_WITH_ERROR
+      - NOT_FOUND
       - CANCELLED
-    description: "IN_PROGRESS = The request is still processing\nCOMPLETED_SUCCESSFULLY = The request is completed and pdf is ready\nCOMPLETED_WITH_ERROR = The request is completed but failed to generate pdf\nCANCELLED = The request is cancelled"
+    description: "IN_PROGRESS = The request is still processing\nCOMPLETED_SUCCESSFULLY = The request is completed and pdf is ready\nNOT_FOUND = The request id not found\nCANCELLED = The request is cancelled"
