@@ -5,7 +5,7 @@ info:
   contact:
     name: 'Sorting Software Solutions'
     email: sort.software.solutions@post.ch
-  version: 2.2.0
+  version: 2.3.0-feature-PZS-10649-extend-rxlabel-interface.1
 host: 'server:8080'
 basePath: /
 paths:
@@ -188,9 +188,19 @@ definitions:
         type: string
         description: "An unique key inside the sort plan to identify\na container position."
         maxLength: 200
+      sortingProductName:
+        type: string
+        description: 'Sorting product name'
+        maxLength: 200
+      sortingLocationPostcodeAndName:
+        type: string
+        description: 'Sorting location postcode and name'
+        maxLength: 25
     required:
       - printDataKey
       - containerPositionName
+      - sortingProductName
+      - sortingLocationPostcodeAndName
     additionalProperties: false
   ContainerType:
     type: object
