@@ -5,7 +5,7 @@ info:
   contact:
     name: 'Sorting Software Solutions'
     email: sort.software.solutions@post.ch
-  version: 2.2.0
+  version: 2.3.0
 host: 'server:8080'
 basePath: /
 paths:
@@ -186,11 +186,16 @@ definitions:
         pattern: '[0-9]{15}'
       containerPositionName:
         type: string
-        description: "An unique key inside the sort plan to identify\na container position."
+        description: "A unique key inside the sort plan to identify\na container position."
+        maxLength: 200
+      sortingProductName:
+        type: string
+        description: 'Sorting product name'
         maxLength: 200
     required:
       - printDataKey
       - containerPositionName
+      - sortingProductName
     additionalProperties: false
   ContainerType:
     type: object
@@ -295,6 +300,14 @@ definitions:
         type: array
         items:
           $ref: 'ContainerPositionWithPrintData'
+      sortingLocationPostcode:
+        type: string
+        description: 'Sorting location postcode'
+        pattern: '^[0-9]{6}$'
+      sortingLocationName:
+        type: string
+        description: 'Sorting location name'
+        maxLength: 25
     required:
       - containerPositionsWithPrintData
     additionalProperties: false
